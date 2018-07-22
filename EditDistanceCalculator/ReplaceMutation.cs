@@ -2,16 +2,20 @@
 
 namespace EditDistanceCalculating
 {
-	public class ReplaceMutation<TItem> : Mutation<TItem>
+	public class ReplaceMutation<TItem> : IMutation<TItem>
 		where TItem : IEquatable<TItem>
 	{
-		public TItem NewItem { get; }
+		public TItem ActualItem { get; }
 
-		public ReplaceMutation(TItem oldItem, TItem newItem)
-			: base(oldItem)
-				=> NewItem = newItem;
+		public TItem DesiredItem { get; }
 
-		public override TResult Accept<TResult>(IMutationVisitor<TResult, TItem> visitor)
+		public ReplaceMutation(TItem actualItem, TItem desiredItem)
+		{
+			ActualItem = actualItem;
+			DesiredItem = desiredItem;
+		}
+
+		public TResult Accept<TResult>(IMutationVisitor<TResult, TItem> visitor)
 			=> visitor.Visit(this);
 	}
 }

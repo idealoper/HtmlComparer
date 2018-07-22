@@ -60,20 +60,20 @@ namespace EditDistanceCalculating.Tests
 		{
 			private MutationEncoder() { }
 
-			public static string Encode(Mutation<char> mutation)
+			public static string Encode(IMutation<char> mutation)
 				=> mutation.Accept(new MutationEncoder());
 
 			public string Visit(InsertMutation<char> mutation)
-				=> $"[i:{mutation.Item}]";
+				=> $"[i:{mutation.DesiredItem}]";
 
 			public string Visit(ReplaceMutation<char> mutation)
-				=> $"[r:{mutation.Item}{mutation.NewItem}]";
+				=> $"[r:{mutation.ActualItem}{mutation.DesiredItem}]";
 
 			public string Visit(DeleteMutation<char> mutation)
-				=> $"[d:{mutation.Item}]";
+				=> $"[d:{mutation.ActualItem}]";
 
 			public string Visit(LeaveAsIsMutation<char> mutation)
-				=> $"[l:{mutation.Item}]";
+				=> $"[l:{mutation.ActualItem}]";
 		}
 
 		[Test]

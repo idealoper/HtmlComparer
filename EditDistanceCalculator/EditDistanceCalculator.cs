@@ -35,36 +35,36 @@ namespace EditDistanceCalculating
 			for (int actualDataDimIndex = 1; actualDataDimIndex < cells.GetLength(0); actualDataDimIndex++)
 				for (int desiredDataDimIndex = 1; desiredDataDimIndex < cells.GetLength(1); desiredDataDimIndex++)
 				{
-					var desiredItem = actualData[actualDataDimIndex - 1];
-					var actualItem = desiredData[desiredDataDimIndex - 1];
+					var actualItem = actualData[actualDataDimIndex - 1];
+					var desiredItem = desiredData[desiredDataDimIndex - 1];
 
-					costs[0] = cells[actualDataDimIndex - 1, desiredDataDimIndex - 1].Cost + (!desiredItem.Equals(actualItem) ? replaceCost : MATCH_COST);
+					costs[0] = cells[actualDataDimIndex - 1, desiredDataDimIndex - 1].Cost + (!actualItem.Equals(desiredItem) ? replaceCost : MATCH_COST);
 					costs[1] = cells[actualDataDimIndex, desiredDataDimIndex - 1].Cost + insertCost;
 					costs[2] = cells[actualDataDimIndex - 1, desiredDataDimIndex].Cost + deleteCost;
 
 					GetMinCostInfo(costs, out var minCost, out var minCostIndex);
 
 					var previousCell = cells[actualDataDimIndex - 1, desiredDataDimIndex - 1];
-					Mutation<TItem> mutation = null;
+					IMutation<TItem> mutation = null;
 					switch (minCostIndex)
 					{
 						case 0:
 							{
 								if (minCost == previousCell.Cost)
 								{
-									mutation = new LeaveAsIsMutation<TItem>(desiredItem);
+									mutation = new LeaveAsIsMutation<TItem>(actualItem, desiredItem);
 								}
 								else
 								{
-									mutation = new ReplaceMutation<TItem>(desiredItem, actualItem);
+									mutation = new ReplaceMutation<TItem>(actualItem, desiredItem);
 								}
 							}
 							break;
 						case 1:
-							mutation = new InsertMutation<TItem>(actualItem);
+							mutation = new InsertMutation<TItem>(desiredItem);
 							break;
 						case 2:
-							mutation = new DeleteMutation<TItem>(desiredItem);
+							mutation = new DeleteMutation<TItem>(actualItem);
 							break;
 						default:
 							break;
@@ -101,10 +101,10 @@ namespace EditDistanceCalculating
 			return new EditDistance<TItem>(editDistanceValue, mutations);
 		}
 
-		private static IEnumerable<Mutation<TItem>> GetMutations(EditDistanceCalculatorCell[,] cells)
+		private static IEnumerable<IMutation<TItem>> GetMutations(EditDistanceCalculatorCell[,] cells)
 			=> GetBackwordMutations(cells).Reverse();
 
-		private static IEnumerable<Mutation<TItem>> GetBackwordMutations(EditDistanceCalculatorCell[,] cells)
+		private static IEnumerable<IMutation<TItem>> GetBackwordMutations(EditDistanceCalculatorCell[,] cells)
 		{
 			var currentCellX = cells.GetLength(0) - 1;
 			var currentCellY = cells.GetLength(1) - 1;
@@ -170,9 +170,9 @@ namespace EditDistanceCalculating
 		{
 			public int Cost { get; }
 
-			public Mutation<TItem> PreviousMutation { get; }
+			public IMutation<TItem> PreviousMutation { get; }
 
-			public EditDistanceCalculatorCell(int cost, Mutation<TItem> previousMutation)
+			public EditDistanceCalculatorCell(int cost, IMutation<TItem> previousMutation)
 			{
 				Cost = cost >= 0 ? cost : throw new ArgumentOutOfRangeException(nameof(cost));
 				PreviousMutation = previousMutation;

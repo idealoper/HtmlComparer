@@ -7,9 +7,9 @@ namespace EditDistanceCalculating
 	{
 		public int Value { get; }
 
-		public Mutation<TItem>[] Mutations { get; }
+		public IMutation<TItem>[] Mutations { get; }
 
-		public EditDistance(int value, Mutation<TItem>[] mutations)
+		public EditDistance(int value, IMutation<TItem>[] mutations)
 		{
 			if (value < 0)
 				throw new ArgumentOutOfRangeException(nameof(value));

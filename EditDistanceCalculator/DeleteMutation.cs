@@ -2,12 +2,15 @@
 
 namespace EditDistanceCalculating
 {
-	public class DeleteMutation<TItem> : Mutation<TItem>
+	public class DeleteMutation<TItem> : IMutation<TItem>
 		where TItem : IEquatable<TItem>
 	{
-		public DeleteMutation(TItem item) : base(item) { }
+		public TItem ActualItem { get; }
 
-		public override TResult Accept<TResult>(IMutationVisitor<TResult, TItem> visitor)
+		public DeleteMutation(TItem actualItem)
+			=> ActualItem = actualItem;
+
+		public TResult Accept<TResult>(IMutationVisitor<TResult, TItem> visitor)
 			=> visitor.Visit(this);
 	}
 }
